@@ -17,7 +17,7 @@ app.post('/webhook' , line.middleware(lineConfig), async (req, res) =>{
     try{
         const events = req.body.events
         console.log('event=>>>>',events)
-        return events.lenght > 0 ? await events.map(item => handleEvent(item)) : res.status(200).send("OK")
+        return events.length > 0 ? await events.map(item => handleEvent(item)) : res.status(200).send("OK")
 
     }catch (error) {
         res.status(500).end()
@@ -25,8 +25,12 @@ app.post('/webhook' , line.middleware(lineConfig), async (req, res) =>{
 });
 
 const handleEvent = async (event) => {
-    console.log(event)
-    return client.replyMessage(event.replyToken,{type:'text',text:'Test'})
+    if(event.type !== 'message' || event.message.type !== 'text'){
+        return null;
+    }
+    else if (event.type === 'message'){
+        return client.replyMessage(event.replyToken,{type:'text',text:'Test'})
+    }
 }
 
 app.listen(4000, () => {
